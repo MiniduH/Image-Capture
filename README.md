@@ -64,3 +64,5 @@ Contributions are welcome. Please open an issue or PR with a description of chan
 ## License
 
 Replace this with your preferred license (e.g., MIT).
+# Image-Capture
+Lightweight Node.js server for capturing, storing, and managing webcam images through a browser interface.
