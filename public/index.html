@@ -595,6 +595,86 @@
     .modal-footer button {
       min-width: 120px;
     }
+    
+    /* Image Fullscreen Modal */
+    .image-fullscreen-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .image-fullscreen-modal.active {
+      display: flex;
+    }
+    
+    .image-fullscreen-container {
+      position: relative;
+      max-width: 95vw;
+      max-height: 95vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .image-fullscreen-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+    }
+    
+    .image-fullscreen-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      font-size: 32px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+    }
+    
+    .image-fullscreen-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .image-card-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+    }
+    
+    .image-card:hover .image-card-overlay {
+      background: rgba(0, 0, 0, 0);
+      opacity: 0;
+    }
   </style>
 </head>
 <body>
@@ -602,7 +682,7 @@
 <!-- Sidebar Navigation -->
 <div class="sidebar">
   <div class="sidebar-header">
-    <div class="sidebar-title">📸 CamCapture</div>
+    <div class="sidebar-title">📸 LECO</div>
     <div class="sidebar-subtitle">Image Management System</div>
   </div>
   
@@ -651,9 +731,18 @@
           <br><small>Run on your server: <code>npm run generate-cert</code> then restart</small>
         </div>
         
+        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+          <button onclick="openCamera()" id="openCameraBtn" style="padding: 12px 24px; flex: 1;">
+            📹 Open Camera
+          </button>
+          <button onclick="closeCamera()" id="closeCameraBtn" style="padding: 12px 24px; flex: 1; display: none;">
+            ❌ Close Camera
+          </button>
+        </div>
+        
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-          <video id="video" autoplay style="flex: 1; max-width: 600px;"></video>
-          <button onclick="flipCamera()" style="padding: 12px; height: fit-content; min-width: 50px; display: flex; align-items: center; justify-content: center;">
+          <video id="video" autoplay style="flex: 1; max-width: 600px; display: none;"></video>
+          <button onclick="flipCamera()" id="flipCameraBtn" style="padding: 12px; height: fit-content; min-width: 50px; display: none; flex-direction: column; align-items: center; justify-content: center;">
             🔄 Flip
           </button>
         </div>
@@ -774,6 +863,14 @@
   </div>
 </div>
 
+<!-- Image Fullscreen Modal -->
+<div class="image-fullscreen-modal" id="imageFullscreenModal">
+  <div class="image-fullscreen-container">
+    <img id="fullscreenImage" src="" alt="Fullscreen image" />
+    <button class="image-fullscreen-close" onclick="closeImageFullscreen()">✕</button>
+  </div>
+</div>
+
 <script>
 let capturedImage = null;
 let editingUserId = null;
@@ -872,13 +969,22 @@ if (!userPermissions.camera_access) {
   document.getElementById('camera-section').innerHTML = '<div class="section"><h2>Camera Access Restricted</h2><p style="color: rgba(255,255,255,0.6); padding: 20px;">🔒 Your role does not allow camera access. You can only view the gallery.</p></div>';
 }
 
-// Initialize camera only if user has permission
-if (userPermissions.camera_access) {
-  navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
+// Function to open camera
+function openCamera() {
+  if (currentStream) {
+    // Camera already open
+    return;
+  }
+  
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } } })
     .then(stream => {
       video.srcObject = stream;
       currentStream = stream;
-      console.log('Camera access granted');
+      video.style.display = 'block';
+      document.getElementById('flipCameraBtn').style.display = 'flex';
+      document.getElementById('openCameraBtn').style.display = 'none';
+      document.getElementById('closeCameraBtn').style.display = 'block';
+      console.log('Camera opened');
     })
     .catch(err => {
       const statusDiv = document.getElementById('cameraStatus');
@@ -893,6 +999,20 @@ if (userPermissions.camera_access) {
         console.error('Camera error:', err);
       }
     });
+}
+
+// Function to close camera
+function closeCamera() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+    currentStream = null;
+  }
+  
+  video.style.display = 'none';
+  document.getElementById('flipCameraBtn').style.display = 'none';
+  document.getElementById('openCameraBtn').style.display = 'block';
+  document.getElementById('closeCameraBtn').style.display = 'none';
+  console.log('Camera closed');
 }
 
 // Load images on page load
@@ -994,9 +1114,16 @@ function displayImages(images) {
     
     return `
       <div class="image-card">
-        <img src="/images/${encodeURIComponent(img)}" alt="Captured image" />
+        <div style="position: relative; overflow: hidden; height: 220px;">
+          <img src="/images/${encodeURIComponent(img)}" alt="Captured image" />
+          <div class="image-card-overlay">
+          </div>
+        </div>
         <div class="image-info">
-          <div class="image-name">${img.replace(/\.[^/.]+$/, "")}</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div class="image-name">${img.replace(/\.[^/.]+$/, "")}</div>
+            <button onclick="viewImageFullscreen('${img.replace(/'/g, "\\'")}')"; style="background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px 8px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="View fullscreen">👁️</button>
+          </div>
           <div class="image-actions">
             <button onclick="downloadImage('${img.replace(/'/g, "\\'")}')">⬇️ Download</button>
             ${deleteBtn}
@@ -1005,6 +1132,18 @@ function displayImages(images) {
       </div>
     `;
   }).join('');
+}
+
+function viewImageFullscreen(filename) {
+  const modal = document.getElementById('imageFullscreenModal');
+  const img = document.getElementById('fullscreenImage');
+  img.src = `/images/${encodeURIComponent(filename)}`;
+  modal.classList.add('active');
+}
+
+function closeImageFullscreen() {
+  const modal = document.getElementById('imageFullscreenModal');
+  modal.classList.remove('active');
 }
 
 function filterImages() {
@@ -1216,6 +1355,20 @@ function deleteUser(userId) {
 document.getElementById('editUserModal').addEventListener('click', (e) => {
   if (e.target.id === 'editUserModal') {
     closeEditModal();
+  }
+});
+
+// Close fullscreen image when clicking outside
+document.getElementById('imageFullscreenModal').addEventListener('click', (e) => {
+  if (e.target.id === 'imageFullscreenModal') {
+    closeImageFullscreen();
+  }
+});
+
+// Close fullscreen image on ESC key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeImageFullscreen();
   }
 });
 
