@@ -1,875 +1,850 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Image Capture</title>
+  <title>LECO - Image Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary-color: #3b82f6;
+      --primary-dark: #1e40af;
+      --secondary-color: #64748b;
+      --accent-color: #0f172a;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --bg-primary: #1e293b;
+      --bg-secondary: #0f172a;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-      min-height: 100vh;
-      color: #ffffff;
-      display: flex;
-      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    
-    /* Sidebar Styles */
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
     .sidebar {
-      width: 280px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      width: 260px;
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-color);
       height: 100vh;
       position: fixed;
       left: 0;
       top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-lg);
       overflow-y: auto;
-      padding: 24px 0;
-      box-shadow: 8px 0 32px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
+      padding: 1.5rem 0;
     }
-    
+
     .sidebar-header {
-      padding: 0 24px 32px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 24px;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
     }
-    
-    .sidebar-title {
-      font-size: 20px;
-      font-weight: 600;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.5px;
-    }
-    
-    .sidebar-subtitle {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 8px;
-    }
-    
-    .nav-section {
-      margin-bottom: 24px;
-    }
-    
-    .nav-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.4);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding: 0 24px 12px;
-    }
-    
-    .nav-item {
-      padding: 12px 24px;
-      margin: 4px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      border: 1px solid transparent;
-      user-select: none;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
     }
-    
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.1);
+
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
     }
-    
-    .nav-item.active {
-      background: rgba(79, 172, 254, 0.15);
-      color: #ffffff;
-      border-color: rgba(79, 172, 254, 0.3);
+
+    .nav-section {
+      padding: 0 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      padding-left: 0.25rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: var(--radius-md);
+      cursor: pointer;
       font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
     }
-    
+
+    .nav-item:hover {
+      background: rgba(148, 163, 184, 0.08);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .nav-item.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
     .nav-icon {
-      font-size: 18px;
-      width: 24px;
+      width: 1.25rem;
       text-align: center;
+      font-size: 1.125rem;
     }
-    
+
     .user-section {
       margin-top: auto;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      margin: 24px 12px 0;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border-color);
     }
-    
-    .user-info {
-      padding: 16px 24px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      margin-bottom: 12px;
+
+    .user-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
     }
-    
-    .user-name {
-      font-weight: 600;
-      color: #ffffff;
-      font-size: 13px;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+    .user-info h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
     }
-    
+
     .user-role {
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.5);
-      background: rgba(79, 172, 254, 0.1);
+      font-size: 0.75rem;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-top: 6px;
+      font-weight: 600;
     }
-    
-    .logout-btn-sidebar {
-      width: calc(100% - 24px);
-      margin: 0 12px;
-      padding: 10px 16px;
-      background: rgba(255, 68, 68, 0.1);
-      color: #ff6666;
-      border: 1px solid rgba(255, 68, 68, 0.2);
-      border-radius: 10px;
+
+    .logout-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius-md);
+      color: #fca5a5;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      margin-top: 1rem;
+      font-size: 0.875rem;
     }
-    
-    .logout-btn-sidebar:hover {
-      background: rgba(255, 68, 68, 0.15);
-      border-color: rgba(255, 68, 68, 0.3);
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
     }
-    
+
     /* Main Content */
     .main-content {
-      margin-left: 280px;
+      margin-left: 260px;
       flex: 1;
-      padding: 20px;
+      padding: 2rem;
       overflow-y: auto;
     }
-    
+
     .container {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
     }
-    
-    /* Content Section Visibility */
+
+    /* Content Sections */
     .content-section {
       display: none;
     }
-    
+
     .content-section.active {
       display: block;
+      animation: fadeIn 0.3s ease;
     }
-    
-    .section {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 30px;
-      border-radius: 20px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(0.5rem); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    
-    h2 {
-      color: #ffffff;
-      margin-bottom: 20px;
-      font-weight: 300;
-      font-size: 24px;
-      letter-spacing: -0.5px;
+
+    .card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(10px);
     }
-    
-    video {
-      width: 100%;
-      max-width: 600px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      margin-bottom: 20px;
-      background: #000;
-      display: block;
-    }
-    
-    .controls {
+
+    .card-header {
       display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .card-icon {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: rgba(59, 130, 246, 0.1);
+      color: #93c5fd;
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(148, 163, 184, 0.08);
+      color: var(--text-secondary);
+      border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(148, 163, 184, 0.15);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
       flex-wrap: wrap;
       align-items: center;
     }
-    
-    button {
-      padding: 12px 24px;
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 14px;
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
       font-weight: 500;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
-    
-    button:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-    }
-    
-    button:active {
-      transform: translateY(0);
-    }
-    
-    button:disabled {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.05);
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-    
-    input[type="text"] {
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      font-size: 14px;
-      color: #ffffff;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-    }
-    
-    input[type="text"]:focus {
+
+    .form-input:focus, .form-select:focus {
       outline: none;
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-    
-    input[type="text"]::placeholder {
-      color: rgba(255, 255, 255, 0.4);
+
+    .form-input::placeholder {
+      color: var(--text-muted);
     }
-    
+
+    /* Media Elements */
+    .video-container {
+      position: relative;
+      background: #000;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
     #preview {
       width: 100%;
-      max-width: 600px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      margin-top: 10px;
+      max-width: 500px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
       display: none;
-      background: #000;
     }
-    
+
+    /* Gallery */
     .search-bar {
       display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
     }
-    
-    .search-bar input {
-      flex: 1;
-      max-width: 400px;
-    }
-    
+
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
     }
-    
+
     .image-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
     }
-    
+
     .image-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
-      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.2);
     }
-    
+
     .image-card img {
       width: 100%;
-      height: 220px;
+      height: 200px;
       object-fit: cover;
-      display: block;
-      background: #000;
     }
-    
-    .image-info {
-      padding: 16px;
+
+    .image-card-body {
+      padding: 1.25rem;
     }
-    
-    .image-name {
-      font-weight: 400;
-      color: #ffffff;
-      word-break: break-word;
-      font-size: 13px;
-      margin-bottom: 12px;
-      opacity: 0.9;
+
+    .image-title {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
     }
-    
+
+    .view-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.125rem;
+      color: #93c5fd;
+      padding: 0.25rem 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .view-icon-btn:hover {
+      transform: scale(1.2);
+    }
+
     .image-actions {
       display: flex;
-      gap: 8px;
+      gap: 0.5rem;
     }
-    
-    .image-actions button {
-      padding: 8px 12px;
-      font-size: 12px;
+
+    .image-actions .btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
       flex: 1;
     }
-    
-    .canvas {
-      display: none;
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      background: rgba(30, 41, 59, 0.5);
     }
-    
-    .no-images {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.4);
-      padding: 60px 20px;
-      font-size: 15px;
-      font-weight: 300;
-    }
-    
-    #cameraStatus {
-      display: none;
-      padding: 16px;
-      margin-bottom: 16px;
-      border-radius: 12px;
-      color: #ff4444;
-      background: rgba(255, 68, 68, 0.1);
-      border: 1px solid rgba(255, 68, 68, 0.2);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    
-    #cameraStatus code {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-    }
-    
-    /* Scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.02);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    
-    /* User Management Table */
-    .users-table {
+
+    table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
     }
-    
-    .users-table thead {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    
-    .users-table th {
-      padding: 16px;
+
+    th {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 1rem;
       text-align: left;
-      font-weight: 500;
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.8);
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #93c5fd;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
     }
-    
-    .users-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 14px;
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      vertical-align: middle;
+      color: var(--text-primary);
     }
-    
-    .users-table tr:hover {
-      background: rgba(255, 255, 255, 0.02);
+
+    tr:hover {
+      background: rgba(59, 130, 246, 0.05);
     }
-    
-    .role-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
+
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
     }
-    
-    .role-badge.admin {
-      background: rgba(255, 99, 71, 0.15);
-      color: #ff6347;
-      border: 1px solid rgba(255, 99, 71, 0.3);
-    }
-    
-    .role-badge.photographer {
-      background: rgba(79, 172, 254, 0.15);
-      color: #4facfe;
-      border: 1px solid rgba(79, 172, 254, 0.3);
-    }
-    
-    .role-badge.viewer {
-      background: rgba(144, 202, 249, 0.15);
-      color: #90caf9;
-      border: 1px solid rgba(144, 202, 249, 0.3);
-    }
-    
-    .user-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .user-actions button {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-    
-    .add-user-form {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 24px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 24px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .form-group label {
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .form-group input,
-    .form-group select {
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      color: #ffffff;
-      font-size: 13px;
-    }
-    
-    .form-group input::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(79, 172, 254, 0.5);
-    }
-    
-    .form-actions {
-      grid-column: 1 / -1;
-      display: flex;
-      gap: 12px;
-    }
-    
-    /* Modal Styles */
+
+    .badge.admin { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+    .badge.photographer { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+    .badge.viewer { background: rgba(34, 197, 94, 0.15); color: #86efac; }
+
+    /* Modals */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      inset: 0;
+      background: rgb(0 0 0 / 0.7);
+      backdrop-filter: blur(4px);
       z-index: 2000;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.2s ease;
     }
-    
+
     .modal.active {
       display: flex;
     }
-    
+
     .modal-content {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 20px;
-      padding: 32px;
-      width: 90%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      width: 100%;
       max-width: 500px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
     }
-    
+
     .modal-header {
-      font-size: 20px;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
     }
-    
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
     .modal-close {
       background: none;
       border: none;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 28px;
+      font-size: 1.5rem;
       cursor: pointer;
-      padding: 0;
-      width: 32px;
-      height: 32px;
+      color: var(--text-muted);
+      padding: 0.25rem;
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
     }
-    
+
     .modal-close:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--text-primary);
     }
-    
-    .modal-body {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .modal-footer {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-    
-    .modal-footer button {
-      min-width: 120px;
-    }
-    
-    /* Image Fullscreen Modal */
+
+    /* Fullscreen Image */
     .image-fullscreen-modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.95);
+      inset: 0;
+      background: rgb(0 0 0 / 0.98);
       z-index: 3000;
-      justify-content: center;
       align-items: center;
-      cursor: pointer;
+      justify-content: center;
     }
-    
+
     .image-fullscreen-modal.active {
       display: flex;
     }
-    
-    .image-fullscreen-container {
-      position: relative;
+
+    .fullscreen-image {
       max-width: 95vw;
       max-height: 95vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .image-fullscreen-container img {
-      max-width: 100%;
-      max-height: 100%;
       object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+      border-radius: var(--radius-md);
     }
-    
-    .image-fullscreen-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      font-size: 32px;
-      cursor: pointer;
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+
+    /* Alert */
+    .alert {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
+      gap: 0.75rem;
+      font-size: 0.875rem;
     }
-    
-    .image-fullscreen-close:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.4);
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
     }
-    
-    .image-card-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: all 0.3s ease;
-      border-radius: 12px;
+
+    .hidden {
+      display: none !important;
     }
-    
-    .image-card:hover .image-card-overlay {
-      background: rgba(0, 0, 0, 0);
-      opacity: 0;
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 1rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fas fa-camera-retro"></i> LECO
+        </div>
+        <div class="logo-subtitle">Image Management System</div>
+      </div>
 
-<!-- Sidebar Navigation -->
-<div class="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-title">📸 LECO</div>
-    <div class="sidebar-subtitle">Image Management System</div>
-  </div>
-  
-  <!-- Navigation -->
-  <div class="nav-section">
-    <div class="nav-section-title">Main</div>
-    <div class="nav-item active" onclick="switchSection('camera')" id="nav-camera">
-      <span class="nav-icon">📷</span>
-      <span>Camera</span>
-    </div>
-    <div class="nav-item" onclick="switchSection('gallery')" id="nav-gallery">
-      <span class="nav-icon">🖼️</span>
-      <span>Gallery</span>
-    </div>
-  </div>
-  
-  <!-- User Management (Admin only) -->
-  <div class="nav-section" id="admin-section" style="display: none;">
-    <div class="nav-section-title">Administration</div>
-    <div class="nav-item" onclick="switchSection('users')" id="nav-users">
-      <span class="nav-icon">👥</span>
-      <span>User Management</span>
-    </div>
-  </div>
-  
-  <!-- User Info Section -->
-  <div class="user-section">
-    <div class="user-info">
-      <div class="user-name" id="sidebar-username">Loading...</div>
-      <div class="user-role" id="sidebar-role">User</div>
-    </div>
-    <button class="logout-btn-sidebar" onclick="logout()">🚪 Logout</button>
-  </div>
-</div>
-
-<!-- Main Content -->
-<div class="main-content">
-  <div class="container">
-    
-    <!-- Camera Section -->
-    <div class="content-section active" id="camera-section">
-      <div class="section">
-        <h2>Live Camera</h2>
-        <div id="cameraStatus">
-          ⚠️ Camera access blocked! For network devices, HTTPS is required. 
-          <br><small>Run on your server: <code>npm run generate-cert</code> then restart</small>
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <div class="nav-item active" onclick="switchSection('camera')" id="nav-camera">
+          <i class="nav-icon fas fa-camera"></i>
+          <span>Camera</span>
         </div>
-        
-        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-          <button onclick="openCamera()" id="openCameraBtn" style="padding: 12px 24px; flex: 1;">
-            📹 Open Camera
-          </button>
-          <button onclick="closeCamera()" id="closeCameraBtn" style="padding: 12px 24px; flex: 1; display: none;">
-            ❌ Close Camera
-          </button>
-        </div>
-        
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-          <video id="video" autoplay style="flex: 1; max-width: 600px; display: none;"></video>
-          <button onclick="flipCamera()" id="flipCameraBtn" style="padding: 12px; height: fit-content; min-width: 50px; display: none; flex-direction: column; align-items: center; justify-content: center;">
-            🔄 Flip
-          </button>
-        </div>
-        
-        <div class="controls">
-          <button onclick="capture()">📸 Capture</button>
-          <input type="text" id="imageName" placeholder="Image name (optional)" />
-          <button onclick="save()">� Save Image</button>
+        <div class="nav-item" onclick="switchSection('gallery')" id="nav-gallery">
+          <i class="nav-icon fas fa-images"></i>
+          <span>Gallery</span>
         </div>
       </div>
 
-      <!-- Preview Section -->
-      <div class="section">
-        <h2>Preview</h2>
-        <img id="preview" />
-      </div>
-    </div>
-
-    <!-- Gallery Section -->
-    <div class="content-section" id="gallery-section">
-      <div class="section">
-        <h2>Gallery</h2>
-        <div class="search-bar">
-          <input type="text" id="searchInput" placeholder="Search images by name..." onkeyup="filterImages()">
-          <button onclick="loadImages()">🔄 Refresh</button>
+      <div class="nav-section" id="admin-section" style="display: none;">
+        <div class="nav-section-title">Administration</div>
+        <div class="nav-item" onclick="switchSection('users')" id="nav-users">
+          <i class="nav-icon fas fa-users-cog"></i>
+          <span>User Management</span>
         </div>
-        <div id="gallery" class="gallery"></div>
       </div>
-    </div>
 
-    <!-- User Management Section -->
-    <div class="content-section" id="users-section">
-      <div class="section">
-        <h2>User Management</h2>
-        
-        <!-- Add New User Form -->
-        <div class="add-user-form">
-          <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="newUsername" placeholder="Enter username" required />
+      <div class="user-section">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-info">
+          <h4 id="sidebar-username">Loading...</h4>
+          <div class="user-role" id="sidebar-role">User</div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <!-- Camera Section -->
+        <div class="content-section active" id="camera-section">
+          <div class="card">
+            <div class="card-header">
+              <i class="card-icon fas fa-video"></i>
+              <h2 class="card-title">Live Camera</h2>
+            </div>
+            
+            <div id="cameraStatus" class="alert alert-error hidden">
+              <i class="fas fa-exclamation-triangle"></i>
+              Camera access requires HTTPS on network devices. Please run <code>npm run generate-cert</code> and restart.
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="openCamera()" id="openCameraBtn">
+                <i class="fas fa-play"></i> Open Camera
+              </button>
+              <button class="btn btn-secondary" onclick="closeCamera()" id="closeCameraBtn" style="display: none;">
+                <i class="fas fa-stop"></i> Close Camera
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin: 2rem 0;">
+              <div class="video-container">
+                <video id="video" autoplay muted playsinline style="display: none;"></video>
+              </div>
+              <button class="btn btn-secondary" onclick="flipCamera()" id="flipCameraBtn" style="display: none;">
+                <i class="fas fa-exchange-alt"></i> Flip
+              </button>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="capture()">
+                <i class="fas fa-camera"></i> Capture
+              </button>
+              <div class="form-group" style="flex: 1; max-width: 300px; margin-bottom: 0;">
+                <input type="text" id="imageName" class="form-input" placeholder="Image name (optional)">
+              </div>
+              <button class="btn btn-primary" onclick="save()">
+                <i class="fas fa-save"></i> Save Image
+              </button>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="newEmail" placeholder="Enter email" required />
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="newPassword" placeholder="Enter password" required />
-          </div>
-          <div class="form-group">
-            <label>Role</label>
-            <select id="newRole" required>
-              <option value="photographer">Photographer</option>
-              <option value="viewer">Viewer</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button onclick="addNewUser()" style="flex: 1;">✅ Add User</button>
-            <button onclick="clearAddUserForm()" style="flex: 1; background: rgba(255,255,255,0.05);">❌ Clear</button>
+
+          <div class="card">
+            <div class="card-header">
+              <i class="card-icon fas fa-eye"></i>
+              <h2 class="card-title">Preview</h2>
+            </div>
+            <img id="preview" />
           </div>
         </div>
-        
-        <!-- Users Table -->
-        <table class="users-table">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="usersTableBody">
-            <tr>
-              <td colspan="5" style="text-align: center; color: rgba(255,255,255,0.5);">Loading users...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
+        <!-- Gallery Section -->
+        <div class="content-section" id="gallery-section">
+          <div class="card">
+            <div class="card-header">
+              <i class="card-icon fas fa-images"></i>
+              <h2 class="card-title">Image Gallery</h2>
+            </div>
+            
+            <div class="search-bar">
+              <div class="form-group" style="flex: 1; max-width: 400px; margin-bottom: 0;">
+                <input type="text" id="searchInput" class="form-input" placeholder="Search images by name..." onkeyup="filterImages()">
+              </div>
+              <button class="btn btn-secondary" onclick="loadImages()">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+            
+            <div id="gallery" class="gallery"></div>
+          </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="content-section" id="users-section">
+          <div class="card">
+            <div class="card-header">
+              <i class="card-icon fas fa-users-cog"></i>
+              <h2 class="card-title">User Management</h2>
+            </div>
+
+            <div class="add-user-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(15, 23, 42, 0.6); border-radius: 0.75rem; border: 1px solid #334155;">
+              <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" id="newUsername" class="form-input" placeholder="Enter username" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="newEmail" class="form-input" placeholder="Enter email" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="newPassword" class="form-input" placeholder="Enter password" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Role</label>
+                <select id="newRole" class="form-select" required>
+                  <option value="photographer">Photographer</option>
+                  <option value="viewer">Viewer</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div style="grid-column: 1 / -1; display: flex; gap: 1rem;">
+                <button class="btn btn-primary" onclick="addNewUser()" style="flex: 1;">
+                  <i class="fas fa-user-plus"></i> Add User
+                </button>
+                <button class="btn btn-secondary" onclick="clearAddUserForm()" style="flex: 1;">
+                  <i class="fas fa-times"></i> Clear
+                </button>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">Loading users...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
-</div>
 
-<canvas id="canvas" width="500" height="400" class="canvas"></canvas>
+  <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
 
-<!-- Edit User Modal -->
-<div class="modal" id="editUserModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>Edit User</span>
-      <button class="modal-close" onclick="closeEditModal()">&times;</button>
-    </div>
-    <div class="modal-body">
+  <!-- Edit User Modal -->
+  <div class="modal" id="editUserModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit User</h3>
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
       <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="editUsername" placeholder="Username" disabled style="opacity: 0.6; cursor: not-allowed;" />
+        <label class="form-label">Username</label>
+        <input type="text" id="editUsername" class="form-input" disabled>
       </div>
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="editEmail" placeholder="Enter email" />
+        <label class="form-label">Email</label>
+        <input type="email" id="editEmail" class="form-input" required>
       </div>
       <div class="form-group">
-        <label>Role</label>
-        <select id="editRole">
+        <label class="form-label">Role</label>
+        <select id="editRole" class="form-select" required>
           <option value="photographer">Photographer</option>
           <option value="viewer">Viewer</option>
           <option value="admin">Admin</option>
         </select>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button onclick="closeEditModal()" style="background: rgba(255,255,255,0.05);">Cancel</button>
-      <button onclick="saveEditUser()" style="background: rgba(79, 172, 254, 0.15); color: #4facfe; border-color: rgba(79, 172, 254, 0.3);">💾 Save Changes</button>
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditUser()">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Image Fullscreen Modal -->
-<div class="image-fullscreen-modal" id="imageFullscreenModal">
-  <div class="image-fullscreen-container">
-    <img id="fullscreenImage" src="" alt="Fullscreen image" />
-    <button class="image-fullscreen-close" onclick="closeImageFullscreen()">✕</button>
+  <!-- Image Fullscreen Modal -->
+  <div class="image-fullscreen-modal" id="imageFullscreenModal">
+    <img id="fullscreenImage" class="fullscreen-image" alt="Fullscreen image">
+    <button class="modal-close" onclick="closeImageFullscreen()" style="position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">&times;</button>
   </div>
-</div>
 
 <script>
 let capturedImage = null;
@@ -884,14 +859,13 @@ const searchInput = document.getElementById('searchInput');
 
 let allImages = [];
 let currentStream = null;
-let facingMode = 'user'; // 'user' = front, 'environment' = back
+let facingMode = 'user';
 let userRole = 'photographer';
 let userId = null;
 let username = null;
 let userPermissions = {};
 let allUsers = [];
 
-// Check authentication
 function checkAuth() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -906,11 +880,9 @@ function checkAuth() {
   
   console.log('Auth Check - Role:', userRole, 'Permissions:', userPermissions);
   
-  // Update sidebar with user info
   document.getElementById('sidebar-username').textContent = username;
   document.getElementById('sidebar-role').textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1);
   
-  // Show admin section only for admins
   if (userRole === 'admin') {
     document.getElementById('admin-section').style.display = 'block';
   }
@@ -920,36 +892,29 @@ function checkAuth() {
 
 const authToken = checkAuth();
 
-// Navigation function
 function switchSection(sectionId) {
-  // Hide all sections
   document.querySelectorAll('.content-section').forEach(el => {
     el.classList.remove('active');
   });
   
-  // Remove active class from all nav items
   document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.remove('active');
   });
   
-  // Show selected section
   const section = document.getElementById(sectionId + '-section');
   if (section) {
     section.classList.add('active');
   }
   
-  // Mark nav item as active
   const navItem = document.getElementById('nav-' + sectionId);
   if (navItem) {
     navItem.classList.add('active');
   }
   
-  // Load users data if switching to users section
   if (sectionId === 'users') {
     loadAllUsers();
   }
   
-  // Load images if switching to gallery
   if (sectionId === 'gallery') {
     loadImages();
   }
@@ -964,15 +929,12 @@ function logout() {
   window.location.href = 'login.html';
 }
 
-// Hide camera section if user doesn't have permission
 if (!userPermissions.camera_access) {
-  document.getElementById('camera-section').innerHTML = '<div class="section"><h2>Camera Access Restricted</h2><p style="color: rgba(255,255,255,0.6); padding: 20px;">🔒 Your role does not allow camera access. You can only view the gallery.</p></div>';
+  document.getElementById('camera-section').innerHTML = '<div class="card"><h2 class="card-title">Camera Access Restricted</h2><p style="color: rgba(255,255,255,0.6); padding: 20px;">🔒 Your role does not allow camera access. You can only view the gallery.</p></div>';
 }
 
-// Function to open camera
 function openCamera() {
   if (currentStream) {
-    // Camera already open
     return;
   }
   
@@ -1001,7 +963,6 @@ function openCamera() {
     });
 }
 
-// Function to close camera
 function closeCamera() {
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
@@ -1015,7 +976,6 @@ function closeCamera() {
   console.log('Camera closed');
 }
 
-// Load images on page load
 loadImages();
 
 function capture() {
@@ -1027,15 +987,12 @@ function capture() {
 }
 
 function flipCamera() {
-  // Stop current stream
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
   }
   
-  // Toggle facing mode
   facingMode = facingMode === 'user' ? 'environment' : 'user';
   
-  // Start new stream with opposite camera
   navigator.mediaDevices.getUserMedia({ 
     video: { 
       facingMode: facingMode,
@@ -1049,7 +1006,6 @@ function flipCamera() {
     console.log('Switched to ' + (facingMode === 'user' ? 'front' : 'back') + ' camera');
   })
   .catch(err => {
-    // If camera switch fails, switch back
     facingMode = facingMode === 'user' ? 'environment' : 'user';
     alert('Camera not available: ' + err.message);
     console.error('Camera flip error:', err);
@@ -1103,29 +1059,25 @@ function loadImages() {
 
 function displayImages(images) {
   if (images.length === 0) {
-    gallery.innerHTML = '<div class="no-images">No images captured yet</div>';
+    gallery.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 60px 20px;">No images captured yet</div>';
     return;
   }
   
   gallery.innerHTML = images.map((img, idx) => {
     const deleteBtn = userPermissions.delete_image 
-      ? `<button onclick="deleteImage('${img.replace(/'/g, "\\'")}')">🗑️ Delete</button>`
-      : `<button disabled style="opacity: 0.5; cursor: not-allowed;">🗑️ Delete</button>`;
+      ? `<button class="btn btn-danger" onclick="deleteImage('${img.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i> Delete</button>`
+      : `<button class="btn btn-danger" disabled style="opacity: 0.5;"><i class="fas fa-trash"></i> Delete</button>`;
     
     return `
       <div class="image-card">
-        <div style="position: relative; overflow: hidden; height: 220px;">
-          <img src="/images/${encodeURIComponent(img)}" alt="Captured image" />
-          <div class="image-card-overlay">
-          </div>
-        </div>
-        <div class="image-info">
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-            <div class="image-name">${img.replace(/\.[^/.]+$/, "")}</div>
-            <button onclick="viewImageFullscreen('${img.replace(/'/g, "\\'")}')"; style="background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px 8px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="View fullscreen">👁️</button>
+        <img src="/images/${encodeURIComponent(img)}" alt="Captured image" />
+        <div class="image-card-body">
+          <div class="image-title">
+            ${img.replace(/\.[^/.]+$/, "")}
+            <button class="view-icon-btn" onclick="viewImageFullscreen('${img.replace(/'/g, "\\'")}')"><i class="fas fa-eye"></i></button>
           </div>
           <div class="image-actions">
-            <button onclick="downloadImage('${img.replace(/'/g, "\\'")}')">⬇️ Download</button>
+            <button class="btn btn-secondary" onclick="downloadImage('${img.replace(/'/g, "\\'")}')"><i class="fas fa-download"></i> Download</button>
             ${deleteBtn}
           </div>
         </div>
@@ -1183,7 +1135,6 @@ function deleteImage(filename) {
   .catch(err => alert('Error: ' + err));
 }
 
-// User Management Functions
 function loadAllUsers() {
   fetch('/admin/users', {
     method: 'GET',
@@ -1208,7 +1159,7 @@ function displayUsers(users) {
   const tbody = document.getElementById('usersTableBody');
   
   if (users.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: rgba(255,255,255,0.5);">No users found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No users found</td></tr>';
     return;
   }
   
@@ -1216,12 +1167,12 @@ function displayUsers(users) {
     <tr>
       <td>${user.username}</td>
       <td>${user.email}</td>
-      <td><span class="role-badge ${user.role}">${user.role}</span></td>
+      <td><span class="badge ${user.role}">${user.role}</span></td>
       <td>${user.created || 'N/A'}</td>
       <td>
-        <div class="user-actions">
-          <button onclick="editUser(${user.id})">✏️ Edit</button>
-          <button onclick="deleteUser(${user.id})" style="background: rgba(255,68,68,0.1); color: #ff6666; border-color: rgba(255,68,68,0.2);">🗑️ Delete</button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary" onclick="editUser(${user.id})"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-danger" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i> Delete</button>
         </div>
       </td>
     </tr>
@@ -1234,18 +1185,8 @@ function addNewUser() {
   const password = document.getElementById('newPassword').value.trim();
   const role = document.getElementById('newRole').value;
   
-  if (!username) {
-    alert('Username is required');
-    return;
-  }
-  
-  if (!email) {
-    alert('Email is required');
-    return;
-  }
-  
-  if (!password) {
-    alert('Password is required');
+  if (!username || !email || !password) {
+    alert('Please fill in all fields');
     return;
   }
   
@@ -1275,20 +1216,17 @@ function clearAddUserForm() {
 }
 
 function editUser(userId) {
-  // Find user in allUsers array
   const user = allUsers.find(u => u.id === userId);
   if (!user) {
     alert('User not found');
     return;
   }
   
-  // Populate modal with user data
   editingUserId = userId;
   document.getElementById('editUsername').value = user.username;
   document.getElementById('editEmail').value = user.email;
   document.getElementById('editRole').value = user.role;
   
-  // Show modal
   document.getElementById('editUserModal').classList.add('active');
 }
 
@@ -1351,21 +1289,18 @@ function deleteUser(userId) {
   .catch(err => alert('Error: ' + err));
 }
 
-// Close modal when clicking outside
 document.getElementById('editUserModal').addEventListener('click', (e) => {
   if (e.target.id === 'editUserModal') {
     closeEditModal();
   }
 });
 
-// Close fullscreen image when clicking outside
 document.getElementById('imageFullscreenModal').addEventListener('click', (e) => {
   if (e.target.id === 'imageFullscreenModal') {
     closeImageFullscreen();
   }
 });
 
-// Close fullscreen image on ESC key
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeImageFullscreen();
