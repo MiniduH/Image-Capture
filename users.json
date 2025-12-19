@@ -1,0 +1,81 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "12345678",
+      "email": "admin@example.com",
+      "role": "admin",
+      "created": "2025-12-18"
+    },
+    {
+      "id": 2,
+      "username": "Rukshan",
+      "password": "12345678",
+      "email": "user1@example.com",
+      "role": "photographer",
+      "created": "2025-12-18"
+    },
+    {
+      "id": 3,
+      "username": "Minindu",
+      "password": "12345678",
+      "email": "user2@example.com",
+      "role": "viewer",
+      "created": "2025-12-18"
+    },
+    {
+      "id": 4,
+      "username": "test",
+      "password": "12345678",
+      "email": "test",
+      "role": "photographer",
+      "created": "2025-12-18"
+    },
+    {
+      "id": 5,
+      "username": "viewer",
+      "password": "viewer123",
+      "email": "viewer@example.com",
+      "role": "viewer",
+      "created": "2025-12-18"
+    }
+  ],
+  "roles": {
+    "admin": {
+      "name": "Administrator",
+      "description": "Full system access including user management",
+      "permissions": {
+        "camera_access": true,
+        "view_gallery": true,
+        "save_image": true,
+        "delete_image": true,
+        "download_image": true,
+        "manage_users": true,
+        "manage_roles": true
+      }
+    },
+    "photographer": {
+      "name": "Photographer",
+      "description": "Can capture photos and manage gallery",
+      "permissions": {
+        "camera_access": true,
+        "view_gallery": true,
+        "save_image": true,
+        "delete_image": true,
+        "download_image": true
+      }
+    },
+    "viewer": {
+      "name": "Viewer",
+      "description": "Can only view gallery, no camera access",
+      "permissions": {
+        "camera_access": false,
+        "view_gallery": true,
+        "save_image": false,
+        "delete_image": false,
+        "download_image": true
+      }
+    }
+  }
+}

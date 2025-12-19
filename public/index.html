@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Capture</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      display: flex;
+      margin: 0;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+      padding: 24px 0;
+      box-shadow: 8px 0 32px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+    
+    .sidebar-header {
+      padding: 0 24px 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 24px;
+    }
+    
+    .sidebar-title {
+      font-size: 20px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    
+    .sidebar-subtitle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 8px;
+    }
+    
+    .nav-section {
+      margin-bottom: 24px;
+    }
+    
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 0 24px 12px;
+    }
+    
+    .nav-item {
+      padding: 12px 24px;
+      margin: 4px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-item.active {
+      background: rgba(79, 172, 254, 0.15);
+      color: #ffffff;
+      border-color: rgba(79, 172, 254, 0.3);
+      font-weight: 500;
+    }
+    
+    .nav-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .user-section {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin: 24px 12px 0;
+    }
+    
+    .user-info {
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .user-name {
+      font-weight: 600;
+      color: #ffffff;
+      font-size: 13px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .user-role {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(79, 172, 254, 0.1);
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
+    }
+    
+    .logout-btn-sidebar {
+      width: calc(100% - 24px);
+      margin: 0 12px;
+      padding: 10px 16px;
+      background: rgba(255, 68, 68, 0.1);
+      color: #ff6666;
+      border: 1px solid rgba(255, 68, 68, 0.2);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .logout-btn-sidebar:hover {
+      background: rgba(255, 68, 68, 0.15);
+      border-color: rgba(255, 68, 68, 0.3);
+    }
+    
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Content Section Visibility */
+    .content-section {
+      display: none;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    .section {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    
+    h2 {
+      color: #ffffff;
+      margin-bottom: 20px;
+      font-weight: 300;
+      font-size: 24px;
+      letter-spacing: -0.5px;
+    }
+    
+    video {
+      width: 100%;
+      max-width: 600px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      margin-bottom: 20px;
+      background: #000;
+      display: block;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    button {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.05);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    
+    input[type="text"] {
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-size: 14px;
+      color: #ffffff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+    
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    #preview {
+      width: 100%;
+      max-width: 600px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      margin-top: 10px;
+      display: none;
+      background: #000;
+    }
+    
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      max-width: 400px;
+    }
+    
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    
+    .image-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    .image-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .image-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+    
+    .image-info {
+      padding: 16px;
+    }
+    
+    .image-name {
+      font-weight: 400;
+      color: #ffffff;
+      word-break: break-word;
+      font-size: 13px;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+    
+    .image-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .image-actions button {
+      padding: 8px 12px;
+      font-size: 12px;
+      flex: 1;
+    }
+    
+    .canvas {
+      display: none;
+    }
+    
+    .no-images {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.4);
+      padding: 60px 20px;
+      font-size: 15px;
+      font-weight: 300;
+    }
+    
+    #cameraStatus {
+      display: none;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      color: #ff4444;
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid rgba(255, 68, 68, 0.2);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    #cameraStatus code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* User Management Table */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    .users-table thead {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .users-table th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .users-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+    }
+    
+    .users-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .role-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .role-badge.admin {
+      background: rgba(255, 99, 71, 0.15);
+      color: #ff6347;
+      border: 1px solid rgba(255, 99, 71, 0.3);
+    }
+    
+    .role-badge.photographer {
+      background: rgba(79, 172, 254, 0.15);
+      color: #4facfe;
+      border: 1px solid rgba(79, 172, 254, 0.3);
+    }
+    
+    .role-badge.viewer {
+      background: rgba(144, 202, 249, 0.15);
+      color: #90caf9;
+      border: 1px solid rgba(144, 202, 249, 0.3);
+    }
+    
+    .user-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .user-actions button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .add-user-form {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group label {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-group input,
+    .form-group select {
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 13px;
+    }
+    
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(79, 172, 254, 0.5);
+    }
+    
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 32px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-header {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 28px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-close:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+    
+    .modal-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    
+    .modal-footer button {
+      min-width: 120px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">📸 CamCapture</div>
+    <div class="sidebar-subtitle">Image Management System</div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="nav-section">
+    <div class="nav-section-title">Main</div>
+    <div class="nav-item active" onclick="switchSection('camera')" id="nav-camera">
+      <span class="nav-icon">📷</span>
+      <span>Camera</span>
+    </div>
+    <div class="nav-item" onclick="switchSection('gallery')" id="nav-gallery">
+      <span class="nav-icon">🖼️</span>
+      <span>Gallery</span>
+    </div>
+  </div>
+  
+  <!-- User Management (Admin only) -->
+  <div class="nav-section" id="admin-section" style="display: none;">
+    <div class="nav-section-title">Administration</div>
+    <div class="nav-item" onclick="switchSection('users')" id="nav-users">
+      <span class="nav-icon">👥</span>
+      <span>User Management</span>
+    </div>
+  </div>
+  
+  <!-- User Info Section -->
+  <div class="user-section">
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Loading...</div>
+      <div class="user-role" id="sidebar-role">User</div>
+    </div>
+    <button class="logout-btn-sidebar" onclick="logout()">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container">
+    
+    <!-- Camera Section -->
+    <div class="content-section active" id="camera-section">
+      <div class="section">
+        <h2>Live Camera</h2>
+        <div id="cameraStatus">
+          ⚠️ Camera access blocked! For network devices, HTTPS is required. 
+          <br><small>Run on your server: <code>npm run generate-cert</code> then restart</small>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <video id="video" autoplay style="flex: 1; max-width: 600px;"></video>
+          <button onclick="flipCamera()" style="padding: 12px; height: fit-content; min-width: 50px; display: flex; align-items: center; justify-content: center;">
+            🔄 Flip
+          </button>
+        </div>
+        
+        <div class="controls">
+          <button onclick="capture()">📸 Capture</button>
+          <input type="text" id="imageName" placeholder="Image name (optional)" />
+          <button onclick="save()">� Save Image</button>
+        </div>
+      </div>
+
+      <!-- Preview Section -->
+      <div class="section">
+        <h2>Preview</h2>
+        <img id="preview" />
+      </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="content-section" id="gallery-section">
+      <div class="section">
+        <h2>Gallery</h2>
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="Search images by name..." onkeyup="filterImages()">
+          <button onclick="loadImages()">🔄 Refresh</button>
+        </div>
+        <div id="gallery" class="gallery"></div>
+      </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="content-section" id="users-section">
+      <div class="section">
+        <h2>User Management</h2>
+        
+        <!-- Add New User Form -->
+        <div class="add-user-form">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="newUsername" placeholder="Enter username" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="newEmail" placeholder="Enter email" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="newPassword" placeholder="Enter password" required />
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="newRole" required>
+              <option value="photographer">Photographer</option>
+              <option value="viewer">Viewer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button onclick="addNewUser()" style="flex: 1;">✅ Add User</button>
+            <button onclick="clearAddUserForm()" style="flex: 1; background: rgba(255,255,255,0.05);">❌ Clear</button>
+          </div>
+        </div>
+        
+        <!-- Users Table -->
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr>
+              <td colspan="5" style="text-align: center; color: rgba(255,255,255,0.5);">Loading users...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<canvas id="canvas" width="500" height="400" class="canvas"></canvas>
+
+<!-- Edit User Modal -->
+<div class="modal" id="editUserModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>Edit User</span>
+      <button class="modal-close" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="editUsername" placeholder="Username" disabled style="opacity: 0.6; cursor: not-allowed;" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="editEmail" placeholder="Enter email" />
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="editRole">
+          <option value="photographer">Photographer</option>
+          <option value="viewer">Viewer</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeEditModal()" style="background: rgba(255,255,255,0.05);">Cancel</button>
+      <button onclick="saveEditUser()" style="background: rgba(79, 172, 254, 0.15); color: #4facfe; border-color: rgba(79, 172, 254, 0.3);">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let capturedImage = null;
+let editingUserId = null;
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const preview = document.getElementById('preview');
+const imageName = document.getElementById('imageName');
+const gallery = document.getElementById('gallery');
+const searchInput = document.getElementById('searchInput');
+
+let allImages = [];
+let currentStream = null;
+let facingMode = 'user'; // 'user' = front, 'environment' = back
+let userRole = 'photographer';
+let userId = null;
+let username = null;
+let userPermissions = {};
+let allUsers = [];
+
+// Check authentication
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+  userRole = localStorage.getItem('role') || 'photographer';
+  userId = localStorage.getItem('userId');
+  username = localStorage.getItem('username') || 'User';
+  const permsStr = localStorage.getItem('permissions');
+  userPermissions = permsStr ? JSON.parse(permsStr) : {};
+  
+  console.log('Auth Check - Role:', userRole, 'Permissions:', userPermissions);
+  
+  // Update sidebar with user info
+  document.getElementById('sidebar-username').textContent = username;
+  document.getElementById('sidebar-role').textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+  
+  // Show admin section only for admins
+  if (userRole === 'admin') {
+    document.getElementById('admin-section').style.display = 'block';
+  }
+  
+  return token;
+}
+
+const authToken = checkAuth();
+
+// Navigation function
+function switchSection(sectionId) {
+  // Hide all sections
+  document.querySelectorAll('.content-section').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  // Remove active class from all nav items
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  // Show selected section
+  const section = document.getElementById(sectionId + '-section');
+  if (section) {
+    section.classList.add('active');
+  }
+  
+  // Mark nav item as active
+  const navItem = document.getElementById('nav-' + sectionId);
+  if (navItem) {
+    navItem.classList.add('active');
+  }
+  
+  // Load users data if switching to users section
+  if (sectionId === 'users') {
+    loadAllUsers();
+  }
+  
+  // Load images if switching to gallery
+  if (sectionId === 'gallery') {
+    loadImages();
+  }
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('username');
+  localStorage.removeItem('role');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('permissions');
+  window.location.href = 'login.html';
+}
+
+// Hide camera section if user doesn't have permission
+if (!userPermissions.camera_access) {
+  document.getElementById('camera-section').innerHTML = '<div class="section"><h2>Camera Access Restricted</h2><p style="color: rgba(255,255,255,0.6); padding: 20px;">🔒 Your role does not allow camera access. You can only view the gallery.</p></div>';
+}
+
+// Initialize camera only if user has permission
+if (userPermissions.camera_access) {
+  navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
+    .then(stream => {
+      video.srcObject = stream;
+      currentStream = stream;
+      console.log('Camera access granted');
+    })
+    .catch(err => {
+      const statusDiv = document.getElementById('cameraStatus');
+      const isNetworkIP = location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
+      const isHTTPS = location.protocol === 'https:';
+      
+      if (isNetworkIP && !isHTTPS) {
+        statusDiv.style.display = 'block';
+        console.error('Camera requires HTTPS on network IP. Error:', err.message);
+      } else {
+        alert('Camera access denied: ' + err.message);
+        console.error('Camera error:', err);
+      }
+    });
+}
+
+// Load images on page load
+loadImages();
+
+function capture() {
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  capturedImage = canvas.toDataURL('image/png');
+  preview.src = capturedImage;
+  preview.style.display = 'block';
+}
+
+function flipCamera() {
+  // Stop current stream
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
+  
+  // Toggle facing mode
+  facingMode = facingMode === 'user' ? 'environment' : 'user';
+  
+  // Start new stream with opposite camera
+  navigator.mediaDevices.getUserMedia({ 
+    video: { 
+      facingMode: facingMode,
+      width: { ideal: 1280 }, 
+      height: { ideal: 720 } 
+    } 
+  })
+  .then(stream => {
+    video.srcObject = stream;
+    currentStream = stream;
+    console.log('Switched to ' + (facingMode === 'user' ? 'front' : 'back') + ' camera');
+  })
+  .catch(err => {
+    // If camera switch fails, switch back
+    facingMode = facingMode === 'user' ? 'environment' : 'user';
+    alert('Camera not available: ' + err.message);
+    console.error('Camera flip error:', err);
+  });
+}
+
+function save() {
+  if (!capturedImage) {
+    alert('Capture image first');
+    return;
+  }
+
+  const name = imageName.value.trim() || `capture_${Date.now()}`;
+  
+  fetch('/save-image', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}`
+    },
+    body: JSON.stringify({ image: capturedImage, name: name })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('Image saved as: ' + data.filename);
+      capturedImage = null;
+      preview.src = '';
+      preview.style.display = 'none';
+      imageName.value = '';
+      loadImages();
+    } else {
+      alert('Error: ' + (data.error || 'Failed to save image'));
+    }
+  })
+  .catch(err => alert('Error saving image: ' + err));
+}
+
+function loadImages() {
+  fetch('/get-images', {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  })
+    .then(res => res.json())
+    .then(data => {
+      allImages = data.images || [];
+      displayImages(allImages);
+    })
+    .catch(err => console.error('Error loading images:', err));
+}
+
+function displayImages(images) {
+  if (images.length === 0) {
+    gallery.innerHTML = '<div class="no-images">No images captured yet</div>';
+    return;
+  }
+  
+  gallery.innerHTML = images.map((img, idx) => {
+    const deleteBtn = userPermissions.delete_image 
+      ? `<button onclick="deleteImage('${img.replace(/'/g, "\\'")}')">🗑️ Delete</button>`
+      : `<button disabled style="opacity: 0.5; cursor: not-allowed;">🗑️ Delete</button>`;
+    
+    return `
+      <div class="image-card">
+        <img src="/images/${encodeURIComponent(img)}" alt="Captured image" />
+        <div class="image-info">
+          <div class="image-name">${img.replace(/\.[^/.]+$/, "")}</div>
+          <div class="image-actions">
+            <button onclick="downloadImage('${img.replace(/'/g, "\\'")}')">⬇️ Download</button>
+            ${deleteBtn}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterImages() {
+  const query = searchInput.value.toLowerCase();
+  const filtered = allImages.filter(img => 
+    img.toLowerCase().includes(query)
+  );
+  displayImages(filtered);
+}
+
+function downloadImage(filename) {
+  const a = document.createElement('a');
+  a.href = `/images/${encodeURIComponent(filename)}`;
+  a.download = filename;
+  a.click();
+}
+
+function deleteImage(filename) {
+  if (!confirm('Delete this image?')) return;
+  
+  fetch('/delete-image', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}`
+    },
+    body: JSON.stringify({ filename: filename })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      loadImages();
+    } else {
+      alert('Error deleting image');
+    }
+  })
+  .catch(err => alert('Error: ' + err));
+}
+
+// User Management Functions
+function loadAllUsers() {
+  fetch('/admin/users', {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      allUsers = data.users || [];
+      displayUsers(allUsers);
+    } else {
+      alert('Error loading users: ' + (data.error || 'Unknown error'));
+    }
+  })
+  .catch(err => {
+    console.error('Error loading users:', err);
+    alert('Failed to load users');
+  });
+}
+
+function displayUsers(users) {
+  const tbody = document.getElementById('usersTableBody');
+  
+  if (users.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: rgba(255,255,255,0.5);">No users found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = users.map(user => `
+    <tr>
+      <td>${user.username}</td>
+      <td>${user.email}</td>
+      <td><span class="role-badge ${user.role}">${user.role}</span></td>
+      <td>${user.created || 'N/A'}</td>
+      <td>
+        <div class="user-actions">
+          <button onclick="editUser(${user.id})">✏️ Edit</button>
+          <button onclick="deleteUser(${user.id})" style="background: rgba(255,68,68,0.1); color: #ff6666; border-color: rgba(255,68,68,0.2);">🗑️ Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function addNewUser() {
+  const username = document.getElementById('newUsername').value.trim();
+  const email = document.getElementById('newEmail').value.trim();
+  const password = document.getElementById('newPassword').value.trim();
+  const role = document.getElementById('newRole').value;
+  
+  if (!username) {
+    alert('Username is required');
+    return;
+  }
+  
+  if (!email) {
+    alert('Email is required');
+    return;
+  }
+  
+  if (!password) {
+    alert('Password is required');
+    return;
+  }
+  
+  fetch('/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, email, password, role })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('User created successfully');
+      clearAddUserForm();
+      loadAllUsers();
+    } else {
+      alert('Error: ' + (data.error || 'Failed to create user'));
+    }
+  })
+  .catch(err => alert('Error: ' + err));
+}
+
+function clearAddUserForm() {
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newEmail').value = '';
+  document.getElementById('newPassword').value = '';
+  document.getElementById('newRole').value = 'photographer';
+}
+
+function editUser(userId) {
+  // Find user in allUsers array
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) {
+    alert('User not found');
+    return;
+  }
+  
+  // Populate modal with user data
+  editingUserId = userId;
+  document.getElementById('editUsername').value = user.username;
+  document.getElementById('editEmail').value = user.email;
+  document.getElementById('editRole').value = user.role;
+  
+  // Show modal
+  document.getElementById('editUserModal').classList.add('active');
+}
+
+function closeEditModal() {
+  document.getElementById('editUserModal').classList.remove('active');
+  editingUserId = null;
+}
+
+function saveEditUser() {
+  if (!editingUserId) {
+    alert('No user selected');
+    return;
+  }
+  
+  const email = document.getElementById('editEmail').value.trim();
+  const role = document.getElementById('editRole').value;
+  
+  if (!email) {
+    alert('Please fill in all fields');
+    return;
+  }
+  
+  fetch('/admin/users/' + editingUserId, {
+    method: 'PUT',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}`
+    },
+    body: JSON.stringify({ email, role })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('User updated successfully');
+      closeEditModal();
+      loadAllUsers();
+    } else {
+      alert('Error: ' + (data.error || 'Failed to update user'));
+    }
+  })
+  .catch(err => alert('Error: ' + err));
+}
+
+function deleteUser(userId) {
+  if (!confirm('Are you sure you want to delete this user?')) return;
+  
+  fetch('/admin/users/' + userId, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('User deleted successfully');
+      loadAllUsers();
+    } else {
+      alert('Error: ' + (data.error || 'Failed to delete user'));
+    }
+  })
+  .catch(err => alert('Error: ' + err));
+}
+
+// Close modal when clicking outside
+document.getElementById('editUserModal').addEventListener('click', (e) => {
+  if (e.target.id === 'editUserModal') {
+    closeEditModal();
+  }
+});
+
+</script>
+
+</body>
+</html>

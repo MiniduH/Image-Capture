@@ -1,0 +1,18 @@
+{
+  "name": "image-capture",
+  "version": "1.0.0",
+  "description": "Image capture application with Express server",
+  "main": "server.js",
+  "scripts": {
+    "build": "echo 'Build complete - Express server is ready' && npm run generate-cert",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "generate-cert": "node scripts/generate-cert.js"
+  },
+  "keywords": ["image", "capture"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
